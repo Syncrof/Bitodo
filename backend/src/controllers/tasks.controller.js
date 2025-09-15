@@ -80,4 +80,28 @@ async function remove(req, res) {
   }
 }
 
-module.exports = { list, getById, create, update, remove };
+async function replace(req, res) {
+  const parsed = createTaskSchema.safeParse(req.body);
+  if (!parsed.success) {
+    const msg = parsed.error.issues[0]?.message || 'validation error';
+    return res.status(422).json({ error: { code: 'VALIDATION_ERROR', message: msg } });
+  }
+  const { title, description, status, priority, dueDate } = parsed.data;
+  try {
+    const updated = await prisma.task.update({
+      where: { id: req.params.id },
+      data: {
+        title: title.trim(),
+        description: description ?? null,
+        status,
+        priority,
+        dueDate: dueDate ? new Date(dueDate) : null
+      }
+    });
+    res.json(updated);
+  } catch {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
+  }
+}
+
+module.exports = { list, getById, create, update, remove, replace };

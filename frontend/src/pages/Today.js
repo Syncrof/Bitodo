@@ -1,33 +1,43 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../apiConfig';
 import QuickAdd from '../components/QuickAdd';
 import FiltersBar from '../components/FiltersBar';
 import TaskCard from '../components/TaskCard';
 
 const Today = () => {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: 'Team meeting preparation',
-      status: 'done',
-      priority: 'low',
-      dueDate: '2025-09-15',
-    },
-    {
-      id: 2,
-      title: 'Review project proposals',
-      status: 'todo',
-      priority: 'high',
-      dueDate: '2025-09-15',
-    },
-  ]);
+  const [tasks, setTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/tasks?date=today`)
+      .then((res) => res.json())
+      .then((data) => {
+        setTasks(data.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError('Failed to fetch tasks');
+        setLoading(false);
+      });
+  }, []);
   const [activeFilter, setActiveFilter] = useState('all');
 
   const handleAddTask = (newTask) => {
     const taskWithTodayDate = {
       ...newTask,
-      dueDate: new Date().toISOString().split('T')[0],
+      dueDate: new Date().toISOString(),
     };
-    setTasks([...tasks, taskWithTodayDate]);
+    fetch(`${API_BASE_URL}/tasks`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(taskWithTodayDate),
+    })
+      .then((res) => res.json())
+      .then((created) => {
+        setTasks((prev) => [...prev, created]);
+      })
+      .catch(() => setError('Failed to add task'));
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -39,11 +49,13 @@ const Today = () => {
     <div className="flex-1 p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Today</h1>
-        
         <QuickAdd onAddTask={handleAddTask} />
         <FiltersBar activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-        
-        {filteredTasks.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12">Loading...</div>
+        ) : error ? (
+          <div className="text-center py-12 text-red-600">{error}</div>
+        ) : filteredTasks.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">📅</div>
             <h2 className="text-xl font-medium text-gray-900 mb-2">No tasks for today</h2>
