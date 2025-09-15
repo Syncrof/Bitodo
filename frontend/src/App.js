@@ -6,6 +6,7 @@ import Inbox from './pages/Inbox';
 import Today from './pages/Today';
 import Upcoming from './pages/Upcoming';
 import Completed from './pages/Completed';
+import Trash from './pages/Trash';
 
 function App() {
   const handleNewTask = () => {
@@ -29,15 +30,7 @@ function App() {
               <Route path="/today" element={<Today />} />
               <Route path="/upcoming" element={<Upcoming />} />
               <Route path="/completed" element={<Completed />} />
-              <Route path="/trash" element={
-                <div className="flex-1 p-6">
-                  <div className="max-w-4xl mx-auto text-center py-12">
-                    <div className="text-6xl mb-4">🗑️</div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Trash</h1>
-                    <p className="text-gray-600">Deleted tasks will appear here.</p>
-                  </div>
-                </div>
-              } />
+              <Route path="/trash" element={<Trash />} />
             </Routes>
           </main>
         </div>

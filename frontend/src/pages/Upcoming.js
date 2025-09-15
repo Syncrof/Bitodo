@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../apiConfig';
+import { taskAPI } from '../services/taskAPI';
 import QuickAdd from '../components/QuickAdd';
 import FiltersBar from '../components/FiltersBar';
 import TaskCard from '../components/TaskCard';
@@ -8,38 +8,93 @@ const Upcoming = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/tasks?date=upcoming`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTasks(data.data || []);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to fetch tasks');
-        setLoading(false);
-      });
-  }, []);
   const [activeFilter, setActiveFilter] = useState('all');
 
-  const handleAddTask = (newTask) => {
+  useEffect(() => {
+    loadUpcomingTasks();
+  }, []);
+
+  const loadUpcomingTasks = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await taskAPI.getTasks();
+      if (result.success) {
+        // Filter tasks that have future due dates
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        tomorrow.setHours(0, 0, 0, 0);
+        
+        const upcomingTasks = result.data.filter(task => {
+          if (!task.dueDate) return false;
+          const taskDate = new Date(task.dueDate);
+          return taskDate >= tomorrow && task.status !== 'DONE' && task.status !== 'TRASH';
+        });
+        
+        setTasks(upcomingTasks);
+      } else {
+        setError('Failed to load tasks');
+      }
+    } catch (e) {
+      console.error('Load upcoming tasks error:', e);
+      setError('Failed to load tasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddTask = async (newTask) => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const taskWithFutureDate = {
       ...newTask,
       dueDate: tomorrow.toISOString(),
     };
-    fetch(`${API_BASE_URL}/tasks`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(taskWithFutureDate),
-    })
-      .then((res) => res.json())
-      .then((created) => {
-        setTasks((prev) => [...prev, created]);
-      })
-      .catch(() => setError('Failed to add task'));
+    
+    try {
+      const result = await taskAPI.createTask(taskWithFutureDate);
+      if (result.success) {
+        setTasks(prev => [result.data, ...prev]);
+        setError(null);
+      } else {
+        setError('Failed to add task');
+      }
+    } catch (e) {
+      console.error('Add task error:', e);
+      setError('Failed to add task');
+    }
+  };
+
+  const handleUpdateTask = async (id, updates) => {
+    try {
+      const result = await taskAPI.updateTask(id, updates);
+      if (result.success) {
+        setTasks(prev => prev.map(task => 
+          task.id === id ? result.data : task
+        ));
+        setError(null);
+      } else {
+        setError('Failed to update task');
+      }
+    } catch (e) {
+      console.error('Update task error:', e);
+      setError('Failed to update task');
+    }
+  };
+
+  const handleDeleteTask = async (id) => {
+    try {
+      const result = await taskAPI.deleteTask(id);
+      if (result.success) {
+        setTasks(prev => prev.filter(task => task.id !== parseInt(id)));
+        setError(null);
+      } else {
+        setError('Failed to delete task');
+      }
+    } catch (e) {
+      console.error('Delete task error:', e);
+      setError('Failed to delete task');
+    }
   };
 
   const filteredTasks = tasks.filter((task) => {
@@ -72,7 +127,12 @@ const Upcoming = () => {
         ) : (
           <div className="space-y-4">
             {filteredTasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                onUpdateTask={handleUpdateTask}
+                onDeleteTask={handleDeleteTask}
+              />
             ))}
           </div>
         )}
