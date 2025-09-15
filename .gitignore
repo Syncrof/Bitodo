@@ -1,0 +1,25 @@
+# proje kökündesin: C:\Users\Kerem\Desktop\workspace\Bitodo
+New-Item .gitignore -ItemType File -Force
+
+@"
+# Node
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Build çıktıları
+dist/
+build/
+
+# IDE/OS
+.vscode/
+.idea/
+.DS_Store
+
+# Frontend/Backend özel
+frontend/dist/
+backend/dist/
+frontend/build/
+backend/build/
+"@ | Set-Content .gitignore -Encoding UTF8
