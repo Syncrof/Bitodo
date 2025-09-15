@@ -1,24 +1,81 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../apiConfig';
+import { useNavigate } from 'react-router-dom';
+import { taskAPI } from '../services/taskAPI';
 import TaskCard from '../components/TaskCard';
 
 const Completed = () => {
+  const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/tasks?status=DONE`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTasks(data.data || []);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to fetch tasks');
-        setLoading(false);
-      });
+    loadCompletedTasks();
   }, []);
+
+  const loadCompletedTasks = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await taskAPI.getTasks();
+      if (result.success) {
+        // Filter only completed tasks
+        const completedTasks = result.data.filter(task => task.status === 'DONE');
+        setTasks(completedTasks);
+      } else {
+        setError('Failed to load tasks');
+      }
+    } catch (e) {
+      console.error('Load completed tasks error:', e);
+      setError('Failed to load tasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateTask = async (id, updates) => {
+    console.log('Completed page updating task:', id, updates);
+    
+    try {
+      const result = await taskAPI.updateTask(id, updates);
+      if (result.success) {
+        // Task durumu değiştiyse ilgili sayfaya yönlendir
+        if (updates.status) {
+          if (updates.status === 'TODO' || updates.status === 'IN_PROGRESS') {
+            console.log('Redirecting to Inbox page');
+            navigate('/');
+          } else if (updates.status === 'TRASH') {
+            console.log('Redirecting to Trash page');
+            navigate('/trash');
+          }
+        }
+        
+        // Bu sayfadan kaldır
+        setTasks(prev => prev.filter(task => task.id !== parseInt(id)));
+        setError(null);
+      } else {
+        setError('Failed to update task');
+      }
+    } catch (e) {
+      console.error('Update task error:', e);
+      setError('Failed to update task');
+    }
+  };
+
+  const handleDeleteTask = async (id) => {
+    try {
+      const result = await taskAPI.deleteTask(id);
+      if (result.success) {
+        setTasks(prev => prev.filter(task => task.id !== parseInt(id)));
+        setError(null);
+      } else {
+        setError('Failed to delete task');
+      }
+    } catch (e) {
+      console.error('Delete task error:', e);
+      setError('Failed to delete task');
+    }
+  };
 
   return (
     <div className="flex-1 p-6">
@@ -42,7 +99,12 @@ const Completed = () => {
               </p>
             </div>
             {tasks.map((task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard 
+                key={task.id} 
+                task={task} 
+                onUpdateTask={handleUpdateTask}
+                onDeleteTask={handleDeleteTask}
+              />
             ))}
           </div>
         )}
