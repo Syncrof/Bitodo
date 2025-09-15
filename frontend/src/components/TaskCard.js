@@ -2,12 +2,12 @@ import React from 'react';
 
 const TaskCard = ({ task }) => {
   const getPriorityColor = (priority) => {
-    switch (priority) {
-      case 'high':
+    switch (priority?.toUpperCase()) {
+      case 'HIGH':
         return 'bg-red-100 text-red-800';
-      case 'medium':
+      case 'MEDIUM':
         return 'bg-yellow-100 text-yellow-800';
-      case 'low':
+      case 'LOW':
         return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -15,13 +15,15 @@ const TaskCard = ({ task }) => {
   };
 
   const getStatusColor = (status) => {
-    switch (status) {
-      case 'todo':
+    switch (status?.toUpperCase()) {
+      case 'TODO':
         return 'bg-blue-100 text-blue-800';
-      case 'in-progress':
+      case 'IN_PROGRESS':
         return 'bg-purple-100 text-purple-800';
-      case 'done':
+      case 'DONE':
         return 'bg-green-100 text-green-800';
+      case 'TRASH':
+        return 'bg-gray-400 text-gray-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }

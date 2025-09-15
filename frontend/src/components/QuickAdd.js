@@ -7,10 +7,9 @@ const QuickAdd = ({ onAddTask }) => {
     e.preventDefault();
     if (taskTitle.trim()) {
       onAddTask({
-        id: Date.now(),
         title: taskTitle.trim(),
-        status: 'todo',
-        priority: 'medium',
+        status: 'TODO',
+        priority: 'MEDIUM',
         dueDate: null,
       });
       setTaskTitle('');
