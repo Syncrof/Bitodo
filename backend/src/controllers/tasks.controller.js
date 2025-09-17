@@ -105,3 +105,66 @@ async function replace(req, res) {
 }
 
 module.exports = { list, getById, create, update, remove, replace };
+
+// Step CRUD
+async function addStep(req, res) {
+  const { title } = req.body;
+  if (!title || typeof title !== 'string' || !title.trim()) {
+    return res.status(422).json({ error: { code: 'VALIDATION_ERROR', message: 'Step title is required' } });
+  }
+  try {
+    const step = await prisma.step.create({
+      data: {
+        title: title.trim(),
+        taskId: req.params.id
+      }
+    });
+    res.status(201).json(step);
+  } catch {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
+  }
+}
+
+async function updateStep(req, res) {
+  const { title, done } = req.body;
+  try {
+    const step = await prisma.step.update({
+      where: { id: req.params.stepId },
+      data: {
+        ...(title !== undefined ? { title: title.trim() } : {}),
+        ...(done !== undefined ? { done } : {})
+      }
+    });
+    res.json(step);
+  } catch {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Step not found' } });
+  }
+}
+
+async function deleteStep(req, res) {
+  try {
+    await prisma.step.delete({ where: { id: req.params.stepId } });
+    res.status(204).end();
+  } catch {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Step not found' } });
+  }
+}
+
+// Notes güncelleme
+async function updateNotes(req, res) {
+  const { notes } = req.body;
+  try {
+    const updated = await prisma.task.update({
+      where: { id: req.params.id },
+      data: { notes }
+    });
+    res.json(updated);
+  } catch {
+    res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
+  }
+}
+
+module.exports.addStep = addStep;
+module.exports.updateStep = updateStep;
+module.exports.deleteStep = deleteStep;
+module.exports.updateNotes = updateNotes;

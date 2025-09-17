@@ -24,3 +24,21 @@ const listQuerySchema = z.object({
 });
 
 module.exports = { createTaskSchema, updateTaskSchema, listQuerySchema };
+
+// Step ve notes için ek şemalar
+const createStepSchema = z.object({
+  title: z.string().trim().min(1, 'Step title is required')
+});
+
+const updateStepSchema = z.object({
+  title: z.string().trim().min(1).optional(),
+  done: z.boolean().optional()
+});
+
+const updateNotesSchema = z.object({
+  notes: z.string().optional()
+});
+
+module.exports.createStepSchema = createStepSchema;
+module.exports.updateStepSchema = updateStepSchema;
+module.exports.updateNotesSchema = updateNotesSchema;
