@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { taskAPI } from '../services/taskAPI';
-import { API_BASE_URL } from '../apiConfig';
 import QuickAdd from '../components/QuickAdd';
 import FiltersBar from '../components/FiltersBar';
 import TaskCard from '../components/TaskCard';
@@ -44,9 +43,7 @@ const Inbox = () => {
       setLoading(true);
       setError(null);
       
-      console.log('Loading tasks from:', API_BASE_URL);
-      
-      const result = await taskAPI.getTasks();
+  const result = await taskAPI.getTasks();
       console.log('API result:', result);
       
       if (result.success) {

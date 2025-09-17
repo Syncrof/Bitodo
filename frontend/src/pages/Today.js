@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { API_BASE_URL } from '../apiConfig';
+import { taskAPI } from '../services/taskAPI';
 import QuickAdd from '../components/QuickAdd';
 import FiltersBar from '../components/FiltersBar';
 import TaskCard from '../components/TaskCard';
@@ -10,34 +10,36 @@ const Today = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/tasks?date=today`)
-      .then((res) => res.json())
-      .then((data) => {
-        setTasks(data.data || []);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError('Failed to fetch tasks');
-        setLoading(false);
-      });
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await taskAPI.getTasks({ date: 'today' });
+        if (!mounted) return;
+        if (res.success) setTasks(res.data || []);
+        else setError(res.error || 'Failed to fetch tasks');
+      } catch (e) {
+        if (!mounted) return;
+        setError('Failed to fetch tasks: ' + e.message);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => { mounted = false; };
   }, []);
   const [activeFilter, setActiveFilter] = useState('all');
 
-  const handleAddTask = (newTask) => {
+  const handleAddTask = async (newTask) => {
     const taskWithTodayDate = {
       ...newTask,
       dueDate: new Date().toISOString(),
     };
-    fetch(`${API_BASE_URL}/tasks`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(taskWithTodayDate),
-    })
-      .then((res) => res.json())
-      .then((created) => {
-        setTasks((prev) => [...prev, created]);
-      })
-      .catch(() => setError('Failed to add task'));
+    try {
+      const res = await taskAPI.createTask(taskWithTodayDate);
+      if (res.success) setTasks((prev) => [...prev, res.data]);
+      else setError(res.error || 'Failed to add task');
+    } catch (e) {
+      setError('Failed to add task: ' + e.message);
+    }
   };
 
   const filteredTasks = tasks.filter((task) => {

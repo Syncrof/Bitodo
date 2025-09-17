@@ -1,98 +1,61 @@
 // Simple API service for backend integration
-import { API_BASE_URL } from '../apiConfig';
+import apiFetch from '../apiClient';
 
 class TaskAPI {
-  async getTasks() {
+  // Accept optional query: string (e.g. '?date=today') or object ({ date: 'today' })
+  async getTasks(query) {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks`);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      let path = '/tasks';
+      if (query) {
+        if (typeof query === 'string') path = `${path}${query}`;
+        else path = `${path}?${new URLSearchParams(query).toString()}`;
       }
-      const result = await response.json();
-      return { success: true, data: result.data || [] };
+      const { data } = await apiFetch(path, { method: 'GET' });
+      return { success: true, data: data || [] };
     } catch (error) {
       console.error('getTasks error:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, status: error.status };
     }
   }
 
   async createTask(taskData) {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks`, {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(taskData)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`HTTP ${response.status}: ${errorData.error?.message || response.statusText}`);
-      }
-      
-      const result = await response.json();
-      return { success: true, data: result.data || result };
+      const { data } = await apiFetch('/tasks', { method: 'POST', body: taskData });
+      return { success: true, data: data || null };
     } catch (error) {
       console.error('createTask error:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, status: error.status };
     }
   }
 
   async updateTask(id, updates) {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
-        method: 'PATCH',
-        headers: { 
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updates)
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`HTTP ${response.status}: ${errorData.error?.message || response.statusText}`);
-      }
-      
-      const result = await response.json();
-      return { success: true, data: result.data || result };
+      const { data } = await apiFetch(`/tasks/${id}`, { method: 'PATCH', body: updates });
+      return { success: true, data: data || null };
     } catch (error) {
       console.error('updateTask error:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, status: error.status };
     }
   }
 
   async deleteTask(id) {
     try {
-      const response = await fetch(`${API_BASE_URL}/tasks/${id}`, {
-        method: 'DELETE'
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(`HTTP ${response.status}: ${errorData.error?.message || response.statusText}`);
-      }
-      
+      await apiFetch(`/tasks/${id}`, { method: 'DELETE' });
       return { success: true };
     } catch (error) {
       console.error('deleteTask error:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message, status: error.status };
     }
   }
 
-  // Move to trash (preferred method)
   async moveToTrash(id) {
     return this.updateTask(id, { status: 'TRASH' });
   }
 
-  // Check if backend is available
   async checkConnection() {
     try {
-      const response = await fetch(`${API_BASE_URL}/health`, { 
-        method: 'GET',
-        signal: AbortSignal.timeout(3000)
-      });
-      return response.ok;
+      const { status } = await apiFetch('/health', { method: 'GET' });
+      return status === 200;
     } catch (error) {
       console.warn('Backend connection failed:', error.message);
       return false;
@@ -100,5 +63,4 @@ class TaskAPI {
   }
 }
 
-// Export singleton instance
 export const taskAPI = new TaskAPI();

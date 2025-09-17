@@ -2,12 +2,37 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ToastProvider, useToast } from './context/ToastContext';
+import ToastRenderer from './components/ToastRenderer';
+import { setOnError } from './apiClient';
 import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+const Root = () => {
+  const { showToast } = useToast();
+  // register error handler once
+  React.useEffect(() => {
+    setOnError((err) => {
+      if (err && err.message) showToast(err.message);
+    });
+  }, [showToast]);
+  return (
+    <AuthProvider>
+      <App />
+      <ToastRenderer />
+    </AuthProvider>
+  );
+};
+
 root.render(
   <React.StrictMode>
-    <App />
+    <BrowserRouter>
+      <ToastProvider>
+        <Root />
+      </ToastProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );
 
