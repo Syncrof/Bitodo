@@ -7,7 +7,7 @@ const router = Router();
 router.get('/',       ctrl.list);
 router.put('/:id',    ctrl.replace);
 router.get('/:id',    ctrl.getById);
-router.post('/',      ctrl.create);
+router.post('/',      require('../middlewares/requireAuth'), ctrl.create);
 router.patch('/:id',  ctrl.update);
 router.delete('/:id', ctrl.remove);
 

@@ -9,6 +9,8 @@ import TaskCard from '../components/TaskCard';
 const Inbox = () => {
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
+  // Her zaman güvenli, null olamaz
+  const safeTasks = Array.isArray(tasks) ? tasks.filter(Boolean) : [];
   const [activeFilter, setActiveFilter] = useState('all'); // 'all' | 'TODO' | 'IN_PROGRESS' | 'DONE' | 'TRASH'
   const [activePriority, setActivePriority] = useState('all'); // 'all' | 'LOW' | 'MEDIUM' | 'HIGH'
   const [loading, setLoading] = useState(true);
@@ -81,9 +83,10 @@ const Inbox = () => {
       console.log('Create task result:', result);
       
       if (result.success) {
-        setTasks(prev => [result.data, ...prev]); // Yeni taskı en üste ekle
+        setTasks(prev => ([...(Array.isArray(prev) ? prev : []), result.data].filter(Boolean)));
         setError(null); // Clear any previous errors
         console.log('Task added successfully');
+        loadTasks();
       } else {
         setError(result.error || 'Failed to add task');
         console.error('Add task failed:', result.error);
@@ -103,12 +106,10 @@ const Inbox = () => {
       console.log('Update task result:', result);
       
       if (result.success) {
-        // Backend'den dönen güncel data ile state'i güncelle
-        setTasks(prev => prev.map(task => 
-          task.id === id ? result.data : task
-        ));
+        setTasks(prev => (Array.isArray(prev) ? prev.map(task => (task?.id === id ? result.data : task)).filter(Boolean) : []));
         setError(null);
         console.log('Task updated successfully - new data:', result.data);
+        loadTasks();
         
         // Eğer task durumu değiştiyse otomatik olarak ilgili sayfaya yönlendir
         if (updates.status) {
@@ -139,9 +140,10 @@ const Inbox = () => {
       console.log('Delete task result:', result);
       
       if (result.success) {
-        setTasks(prev => prev.filter(task => task.id !== id));
+        setTasks(prev => (Array.isArray(prev) ? prev.filter(task => task && task.id !== id) : []));
         setError(null);
         console.log('Task deleted successfully');
+        loadTasks();
       } else {
         setError(result.error || 'Failed to delete task');
         console.error('Delete task failed:', result.error);
@@ -153,22 +155,12 @@ const Inbox = () => {
   };
 
   // Filter tasks - Inbox sadece active taskları gösterir
-  const filteredTasks = tasks.filter((task) => {
-    // Inbox'ta DONE ve TRASH taskları gösterme
-    if (task.status === 'DONE' || task.status === 'TRASH') {
-      return false;
-    }
-    
-    // Status filter
-    if (activeFilter !== 'all' && task.status !== activeFilter) {
-      return false;
-    }
-    
-    // Priority filter
-    if (activePriority !== 'all' && task.priority !== activePriority) {
-      return false;
-    }
-
+ // Yenisi:
+  const filteredTasks = safeTasks.filter((task) => {
+    if (!task || !task.status) return false;
+    if (task.status === 'DONE' || task.status === 'TRASH') return false;
+    if (activeFilter !== 'all' && task.status !== activeFilter) return false;
+    if (activePriority !== 'all' && task.priority !== activePriority) return false;
     return true;
   });
 

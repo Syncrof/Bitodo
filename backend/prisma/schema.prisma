@@ -18,6 +18,15 @@ enum Priority {
 	HIGH
 }
 
+model User {
+	id           String   @id @default(cuid())
+	email        String   @unique
+	passwordHash String
+	name         String?
+	createdAt    DateTime @default(now())
+	tasks        Task[]
+}
+
 model Task {
 	id          String   @id @default(cuid())
 	title       String
@@ -29,6 +38,8 @@ model Task {
 	priority    Priority  @default(MEDIUM)
 	notes       String?
 	steps       Step[]
+	userId      String
+	user        User     @relation(fields: [userId], references: [id])
 }
 
 model Step {

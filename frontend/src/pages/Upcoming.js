@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { taskAPI } from '../services/taskAPI';
-import QuickAdd from '../components/QuickAdd';
-import FiltersBar from '../components/FiltersBar';
-import TaskCard from '../components/TaskCard';
+// import QuickAdd from '../components/QuickAdd';
+// import FiltersBar from '../components/FiltersBar';
+// import TaskCard from '../components/TaskCard';
 
 const Upcoming = () => {
   const [tasks, setTasks] = useState([]);
+  const safeTasks = Array.isArray(tasks) ? tasks.filter(Boolean) : [];
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeFilter, setActiveFilter] = useState('all');
+  // const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
     loadUpcomingTasks();
@@ -97,17 +98,14 @@ const Upcoming = () => {
     }
   };
 
-  const filteredTasks = tasks.filter((task) => {
-    if (activeFilter === 'all') return true;
-    return task.status === activeFilter;
-  });
+  // Sadece gelecek görevlerin adlarını göster
+  const filteredTasks = safeTasks;
 
   return (
     <div className="flex-1 p-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-900 mb-6">Upcoming</h1>
-        <QuickAdd onAddTask={handleAddTask} />
-        <FiltersBar activeFilter={activeFilter} onFilterChange={setActiveFilter} />
+  {/* QuickAdd ve FiltersBar kaldırıldı */}
         {loading ? (
           <div className="text-center py-12">Loading...</div>
         ) : error ? (
@@ -116,25 +114,16 @@ const Upcoming = () => {
           <div className="text-center py-12">
             <div className="text-6xl mb-4">⏰</div>
             <h2 className="text-xl font-medium text-gray-900 mb-2">No upcoming tasks</h2>
-            <p className="text-gray-600 mb-6">Plan ahead by adding future tasks!</p>
-            <button
-              onClick={() => document.querySelector('input').focus()}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors"
-            >
-              Add Task
-            </button>
+            <p className="text-gray-600 mb-6">Plan ahead and enjoy!</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <ul className="space-y-2">
             {filteredTasks.map((task) => (
-              <TaskCard 
-                key={task.id} 
-                task={task} 
-                onUpdateTask={handleUpdateTask}
-                onDeleteTask={handleDeleteTask}
-              />
+              <li key={task.id} className="text-lg text-gray-900 font-medium bg-white rounded px-4 py-2 shadow">
+                {task.title}
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
     </div>

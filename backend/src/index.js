@@ -1,17 +1,6 @@
-const express = require('express');
-const cors = require('cors');
-const tasks = require('./routes/tasks.routes');
-const error = require('./middlewares/error');
-
-const app = express();
-const PORT = process.env.PORT || 4000;
-
-app.use(cors({ origin: 'http://localhost:3000' }));
-app.use(express.json());
-
-app.get('/api/v1/health', (_, res) => res.json({ status: 'ok' }));
-app.use('/api/v1/tasks', tasks);
-
-app.use(error);
-
-app.listen(PORT, () => console.log(`API listening http://localhost:${PORT}`));
+const { PORT } = require('./lib/config');
+const app = require('./App');
+app.use('/api/v1/auth', require('./routes/auth.routes'));
+app.use('/api/v1/tasks', require('./routes/tasks.routes'));
+app.use(require('./middlewares/error'));
+app.listen(PORT, () => console.log(`API on :${PORT}`));

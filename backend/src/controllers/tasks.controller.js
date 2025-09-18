@@ -1,4 +1,4 @@
-const { prisma } = require('../lib/prisma');
+const prisma = require('../lib/prisma');
 const { createTaskSchema, updateTaskSchema, listQuerySchema } = require('../validations/tasks.schema');
 
 function vErr(msg) { return { status: 422, body: { error: { code: 'VALIDATION_ERROR', message: msg } } }; }
@@ -9,7 +9,7 @@ async function list(req, res) {
     const msg = parsed.error.issues[0]?.message || 'validation error';
     const e = vErr(msg); return res.status(e.status).json(e.body);
   }
-  const { status, priority, q, sort, order, page, limit } = parsed.data;
+  const { status, priority, q, sort = 'createdAt', order = 'desc', page, limit } = parsed.data;
 
   const where = {};
   if (status) where.status = status;
@@ -42,7 +42,14 @@ async function create(req, res) {
   }
   const { title, description, status, priority, dueDate } = parsed.data;
   const created = await prisma.task.create({
-    data: { title: title.trim(), description: description ?? null, status, priority, dueDate: dueDate ? new Date(dueDate) : null }
+    data: {
+      title: title.trim(),
+      description: description ?? null,
+      status,
+      priority,
+      dueDate: dueDate ? new Date(dueDate) : null,
+      userId: req.user.id // Oturumdaki kullanıcının id'si
+    }
   });
   res.status(201).json(created);
 }
