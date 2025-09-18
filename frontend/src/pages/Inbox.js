@@ -1,5 +1,7 @@
 // src/pages/Inbox.js
 import React, { useState, useEffect } from 'react';
+import { useToast } from '../context/ToastContext';
+import { useSidebarBadge } from '../context/SidebarBadgeContext';
 import { useNavigate } from 'react-router-dom';
 import { taskAPI } from '../services/taskAPI';
 import QuickAdd from '../components/QuickAdd';
@@ -7,6 +9,8 @@ import FiltersBar from '../components/FiltersBar';
 import TaskCard from '../components/TaskCard';
 
 const Inbox = () => {
+  const { showToast } = useToast();
+  const { triggerBadge } = useSidebarBadge();
   const navigate = useNavigate();
   const [tasks, setTasks] = useState([]);
   // Her zaman güvenli, null olamaz
@@ -99,34 +103,54 @@ const Inbox = () => {
 
   // Update task
   const handleUpdateTask = async (id, updates) => {
-    console.log('Updating task:', id, updates);
-    
+    const prevTask = safeTasks.find(t => t.id === id);
     try {
       const result = await taskAPI.updateTask(id, updates);
-      console.log('Update task result:', result);
-      
       if (result.success) {
         setTasks(prev => (Array.isArray(prev) ? prev.map(task => (task?.id === id ? result.data : task)).filter(Boolean) : []));
         setError(null);
-        console.log('Task updated successfully - new data:', result.data);
         loadTasks();
-        
-        // Eğer task durumu değiştiyse otomatik olarak ilgili sayfaya yönlendir
+        // Bildirim ve badge göster
         if (updates.status) {
           if (updates.status === 'DONE') {
-            console.log('Redirecting to Completed page');
-            navigate('/completed');
+            showToast('Görev tamamlandı!', {
+              undoable: true,
+              action: {
+                onUndo: async () => {
+                  await taskAPI.updateTask(id, { status: prevTask.status });
+                  loadTasks();
+                }
+              }
+            });
+            triggerBadge('completed');
           } else if (updates.status === 'TRASH') {
-            console.log('Redirecting to Trash page');
-            navigate('/trash');
+            showToast('Görev çöp kutusuna taşındı!', {
+              undoable: true,
+              action: {
+                onUndo: async () => {
+                  await taskAPI.updateTask(id, { status: prevTask.status });
+                  loadTasks();
+                }
+              }
+            });
+            triggerBadge('trash');
+          } else if (updates.status === 'TODO' || updates.status === 'IN_PROGRESS') {
+            showToast('Görev geri alındı!', {
+              undoable: true,
+              action: {
+                onUndo: async () => {
+                  await taskAPI.updateTask(id, { status: prevTask.status });
+                  loadTasks();
+                }
+              }
+            });
+            triggerBadge('inbox');
           }
         }
       } else {
         setError(result.error || 'Failed to update task');
-        console.error('Update task failed:', result.error);
       }
     } catch (e) {
-      console.error('Update task exception:', e);
       setError('Failed to update task: ' + e.message);
     }
   };

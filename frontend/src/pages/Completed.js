@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
+import { useSidebarBadge } from '../context/SidebarBadgeContext';
 import { taskAPI } from '../services/taskAPI';
 import TaskCard from '../components/TaskCard';
 
 const Completed = () => {
-  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const { triggerBadge } = useSidebarBadge();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -34,30 +36,43 @@ const Completed = () => {
   };
 
   const handleUpdateTask = async (id, updates) => {
-    console.log('Completed page updating task:', id, updates);
-    
+    const prevTask = tasks.find(t => t.id === id);
     try {
       const result = await taskAPI.updateTask(id, updates);
       if (result.success) {
-        // Task durumu değiştiyse ilgili sayfaya yönlendir
+        // Bildirim ve badge göster
         if (updates.status) {
           if (updates.status === 'TODO' || updates.status === 'IN_PROGRESS') {
-            console.log('Redirecting to Inbox page');
-            navigate('/');
+            showToast('Görev geri alındı!', {
+              undoable: true,
+              action: {
+                onUndo: async () => {
+                  await taskAPI.updateTask(id, { status: prevTask.status });
+                  await loadCompletedTasks();
+                }
+              }
+            });
+            triggerBadge('inbox');
           } else if (updates.status === 'TRASH') {
-            console.log('Redirecting to Trash page');
-            navigate('/trash');
+            showToast('Görev çöp kutusuna taşındı!', {
+              undoable: true,
+              action: {
+                onUndo: async () => {
+                  await taskAPI.updateTask(id, { status: prevTask.status });
+                  await loadCompletedTasks();
+                }
+              }
+            });
+            triggerBadge('trash');
           }
         }
-        
-        // Bu sayfadan kaldır
-        setTasks(prev => prev.filter(task => task.id !== parseInt(id)));
+        // Listeyi her zaman güncelle
+        await loadCompletedTasks();
         setError(null);
       } else {
         setError('Failed to update task');
       }
     } catch (e) {
-      console.error('Update task error:', e);
       setError('Failed to update task');
     }
   };

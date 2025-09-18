@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider, useToast } from './context/ToastContext';
 import ToastRenderer from './components/ToastRenderer';
+import { SidebarBadgeProvider } from './context/SidebarBadgeContext';
 import { setOnError } from './apiClient';
 import reportWebVitals from './reportWebVitals';
 
@@ -20,8 +21,10 @@ const Root = () => {
   }, [showToast]);
   return (
     <AuthProvider>
-      <App />
-      <ToastRenderer />
+      <SidebarBadgeProvider>
+        <App />
+        <ToastRenderer />
+      </SidebarBadgeProvider>
     </AuthProvider>
   );
 };
