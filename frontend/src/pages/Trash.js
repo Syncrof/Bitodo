@@ -36,7 +36,7 @@ const Trash = () => {
   const handleUpdateTask = async (id, updates) => {
     console.log('Trash page updating task:', id, updates);
     
-    try {
+      try {
       const result = await taskAPI.updateTask(id, updates);
       if (result.success) {
         // Task durumu değiştiyse ilgili sayfaya yönlendir
@@ -53,6 +53,7 @@ const Trash = () => {
         // Bu sayfadan kaldır
         setTasks(prev => prev.filter(task => task.id !== parseInt(id)));
         setError(null);
+          loadTasks();
       } else {
         setError('Failed to update task');
       }
@@ -67,10 +68,11 @@ const Trash = () => {
       return;
     }
     
-    try {
+      try {
       const result = await taskAPI.deleteTask(id);
       if (result.success) {
         setTasks(prev => prev.filter(task => task.id !== parseInt(id)));
+          loadTasks();
       } else {
         setError('Failed to delete task');
       }
@@ -85,10 +87,11 @@ const Trash = () => {
       return;
     }
 
-    try {
+      try {
       const deletePromises = tasks.map(task => taskAPI.deleteTask(task.id));
       await Promise.all(deletePromises);
       setTasks([]);
+        loadTasks();
     } catch (e) {
       console.error('Empty trash error:', e);
       setError('Failed to empty trash');

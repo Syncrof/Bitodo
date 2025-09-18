@@ -14,6 +14,7 @@ const Register = () => {
       navigate(from, { replace: true });
     }
   }, [user, loading, navigate, from]);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -21,11 +22,12 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    const res = await register({ email, password });
-    if (res.success) {
-      navigate(from, { replace: true });
-    } else {
-      setError(res.error || 'Registration failed');
+    if (name.trim().length < 2) return setError('Ad en az 2 karakter olmalı');
+  if (password.length < 8) return setError('Şifre en az 8 karakter olmalı');
+    try {
+  await register({ name, email, password });
+    } catch (e) {
+      setError(e.message || 'İstek başarısız');
     }
   };
 
@@ -35,6 +37,17 @@ const Register = () => {
         <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center tracking-tight">Kayıt Ol</h2>
         {error && <div className="text-red-600 mb-3 text-center">{error}</div>}
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Adınız</label>
+            <input
+              type="text"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              required
+              className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all outline-none bg-gray-50 placeholder-gray-400"
+              placeholder="Adınız"
+            />
+          </div>
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700">Email</label>
             <input

@@ -17,15 +17,35 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+    if (password.length < 8) {
+      setError('Şifre en az 8 karakter olmalı');
+      return;
+    }
+    setSubmitting(true);
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      const res = await login({ email, password });
+      if (!res.success) {
+        setSubmitting(false);
+        setTimeout(() => { window.location.reload(); }, 1200);
+        return;
+      }
+      // Başarılı login'de user state dolana kadar bekle
+      setTimeout(() => {
+        if (!user) {
+          setError('Giriş Yapılamadı... Bilgileri Doğrulayın!');
+          setSubmitting(false);
+          setTimeout(() => { window.location.reload(); }, 1200);
+        }
+      }, 2000);
     } catch (err) {
-      setError(err.message || 'Giriş başarısız');
+      setError('Giriş Yapılamadı... Bilgileri Doğrulayın!');
+      setSubmitting(false);
+      setTimeout(() => { window.location.reload(); }, 1200);
     }
   };
 
@@ -33,7 +53,12 @@ const Login = () => {
     <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100 min-h-screen">
       <div className="w-full max-w-xl bg-white p-12 rounded-3xl shadow-2xl border border-gray-100 flex flex-col justify-center" style={{minHeight:'420px'}}>
         <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center tracking-tight">Giriş Yap</h2>
-        {error && <div className="text-red-600 mb-3 text-center">{error}</div>}
+        {submitting && !error && (
+          <div className="text-blue-600 mb-3 text-center">Giriş yapılıyor...</div>
+        )}
+        {error && (
+          <div className="text-orange-600 mb-3 text-center">{error}</div>
+        )}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700">Email</label>
