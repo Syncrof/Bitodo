@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import Topbar from './components/Topbar';
 import Sidebar from './components/Sidebar';
@@ -28,10 +28,15 @@ const MainLayout = ({ children, onNewTask }) => (
   </div>
 );
 
+
 function App() {
+  const navigate = useNavigate();
   const handleNewTask = () => {
-    const input = document.querySelector('input[type="text"]');
-    if (input) input.focus();
+    navigate('/inbox');
+    setTimeout(() => {
+      const input = document.querySelector('input[type="text"]');
+      if (input) input.focus();
+    }, 100);
   };
 
   return (
