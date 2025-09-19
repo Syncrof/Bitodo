@@ -64,7 +64,7 @@ Bitodo © 2025
 
 Kısa bir dosya/folder yapısı örneği:
 
-```bash
+
 frontend/
 ├── src/
 │   ├── components/
@@ -84,6 +84,7 @@ frontend/
 1. Fork'la ve yeni bir branch oluştur.
 2. Değişikliklerini yap ve commit et.
 3. Pull request gönder.
+
 
 
 
