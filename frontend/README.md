@@ -1,70 +1,84 @@
-# Getting Started with Create React App
+# Bitodo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 📝 Proje Tanımı
 
-## Available Scripts
+Bitodo, modern ve erişilebilir bir yapılacaklar uygulamasıdır. Kullanıcı dostu arayüzü, bildirim sistemi, hızlı task yönetimi ve sezgisel navigasyonuyla öne çıkar.
 
-In the project directory, you can run:
+## 🚀 Özellikler
 
-### `npm start`
+- Modern ve responsive arayüz (React + Tailwind CSS)
+- Bildirim (toast) sistemi ve animasyonlu sidebar uyarıları
+- Task ekleme, silme, geri alma (undo), arşivleme ve geri getirme
+- Oturum açma/kayıt olma (authentication)
+- React Router ile hızlı sayfa geçişleri
+- Erişilebilirlik ve klavye desteği
+- Temiz ve okunabilir kod yapısı
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 📸 Ekran Görüntüleri
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+1. **Ana Sayfa / Task Listesi**  
+   ![Ana sayfa](image.png)
+   
 
-### `npm test`
+2. **Bildirim (Toast) Sistemi**  
+   ![Bildirim](image-1.png)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+3. **Sidebar ve Badge Uyarısı**  
+   ![Sidebar](image-2.png)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+4. **Task Ekleme ve Geri Al (Undo) Butonu**  
+   ![Task Ekleme](image-3.png)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
+4. **Giriş Sayfası  / Register Sayfası**  
+    ![Login Page](image-4.png)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    ![Register Page](image-5.png)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🛠️ Kurulum
 
-## Learn More
+```bash
+git clone https://github.com/SENIN_KULLANICI_ADIN/Bitodo.git
+cd Bitodo/frontend
+npm install
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## ⚙️ Kullanılan Teknolojiler
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+- React
+- React Router
+- Tailwind CSS
+- Context API
+- TypeScript & JavaScript
 
-### Code Splitting
+## 📂 Proje Yapısı
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Kısa bir dosya/folder yapısı örneği:
 
-### Analyzing the Bundle Size
+```
+frontend/
+├── src/
+│   ├── components/
+│   ├── context/
+│   ├── pages/
+│   ├── services/
+│   ├── styles/
+│   ├── App.js
+│   ├── index.js
+│   └── ...
+├── public/
+└── ...
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 👤 Katkıda Bulunma
 
-### Making a Progressive Web App
+1. Fork'la ve yeni bir branch oluştur.
+2. Değişikliklerini yap ve commit et.
+3. Pull request gönder.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
