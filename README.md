@@ -1,51 +1,52 @@
 # Bitodo
 
-## 📝 Proje Tanımı
 
-Bitodo, modern ve erişilebilir bir yapılacaklar uygulamasıdır. Kullanıcı dostu arayüzü, bildirim sistemi, hızlı task yönetimi ve sezgisel navigasyonuyla öne çıkar.
+# Bitodo
 
-## 🚀 Özellikler
+Bitodo, modern ve kullanıcı dostu bir yapılacaklar uygulamasıdır. Her kullanıcının kendi todo listesini yönetebileceği, hızlı ve güvenli bir backend ile React tabanlı frontend sunar.
 
-- Modern ve responsive arayüz (React + Tailwind CSS)
-- Bildirim (toast) sistemi ve animasyonlu sidebar uyarıları
-- Task ekleme, silme, geri alma (undo), arşivleme ve geri getirme
-- Oturum açma/kayıt olma (authentication)
-- React Router ile hızlı sayfa geçişleri
-- Erişilebilirlik ve klavye desteği
-- Temiz ve okunabilir kod yapısı
+## Ekran Görüntüleri
 
-## 📸 Ekran Görüntüleri
+Aşağıda uygulamanın temel ekran görüntülerini bulabilirsiniz:
 
-1. **Ana Sayfa / Task Listesi**  
-   ![Ana sayfa](image.png)
-   
+![Ana Sayfa](./images/image-1.png)
+![Todo Listesi](./images/image-2.png)
+![Detaylar](./images/image-3.png)
+![Profil](./images/image-4.png)
+![Mobil Görünüm](./images/image-5.png)
 
-2. **Bildirim (Toast) Sistemi**  
-   ![Bildirim](image-1.png)
+## Kurulum
 
+1. Repoyu klonlayın:
+   ```sh
+   git clone https://github.com/Syncrof/Bitodo.git
+   ```
+2. Ana dizinde backend ve frontend klasörlerinde bağımlılıkları yükleyin:
+   ```sh
+   cd Bitodo/backend && npm install
+   cd ../frontend && npm install
+   ```
+3. Backend'i başlatın:
+   ```sh
+   npm start
+   ```
+4. Frontend'i başlatın:
+   ```sh
+   npm start
+   ```
 
-3. **Sidebar ve Badge Uyarısı**  
-   ![Sidebar](image-2.png)
+## Özellikler
+- Kullanıcıya özel todo listesi
+- Adım ve not desteği
+- Modern arayüz
+- Hızlı ve güvenli API
 
+## Katkı
+Katkı sağlamak için pull request açabilirsiniz.
 
-4. **Task Ekleme ve Geri Al (Undo) Butonu**  
-   ![Task Ekleme](image-3.png)
+---
 
-
-4. **Giriş Sayfası  / Register Sayfası**  
-    ![Login Page](image-4.png)
-
-
-    ![Register Page](image-5.png)
-
-
-## 🛠️ Kurulum
-
-```bash
-git clone https://github.com/SENIN_KULLANICI_ADIN/Bitodo.git
-cd Bitodo/frontend
-npm install
-npm start
+Bitodo © 2025
 ```
 
 ## ⚙️ Kullanılan Teknolojiler
