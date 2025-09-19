@@ -1,8 +1,5 @@
 # Bitodo
 
-
-# Bitodo
-
 Bitodo, modern ve kullanıcı dostu bir yapılacaklar uygulamasıdır. Her kullanıcının kendi todo listesini yönetebileceği, hızlı ve güvenli bir backend ile React tabanlı frontend sunar.
 
 ## Ekran Görüntüleri
@@ -84,6 +81,7 @@ frontend/
 1. Fork'la ve yeni bir branch oluştur.
 2. Değişikliklerini yap ve commit et.
 3. Pull request gönder.
+
 
 
 
