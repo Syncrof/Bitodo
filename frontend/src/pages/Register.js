@@ -25,7 +25,8 @@ const Register = () => {
     if (name.trim().length < 2) return setError('Ad en az 2 karakter olmalı');
   if (password.length < 8) return setError('Şifre en az 8 karakter olmalı');
     try {
-  await register({ name, email, password });
+      await register({ name, email, password });
+      navigate('/login', { replace: true });
     } catch (e) {
       setError(e.message || 'İstek başarısız');
     }

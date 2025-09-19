@@ -11,7 +11,10 @@ async function list(req, res) {
   }
   const { status, priority, q, sort = 'createdAt', order = 'desc', page, limit } = parsed.data;
 
-  const where = {};
+  if (!req.user || !req.user.id) {
+    return res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Kullanıcı oturumu bulunamadı.' } });
+  }
+  const where = { userId: req.user.id };
   if (status) where.status = status;
   if (priority) where.priority = priority;
   if (q) where.title = { contains: q, mode: 'insensitive' };
@@ -30,7 +33,7 @@ async function list(req, res) {
 
 async function getById(req, res) {
   const task = await prisma.task.findUnique({ where: { id: req.params.id } });
-  if (!task) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
+    if (!task || task.userId !== req.user.id) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
   res.json(task);
 }
 
@@ -60,6 +63,8 @@ async function update(req, res) {
     const msg = parsed.error.issues[0]?.message || 'validation error';
     return res.status(422).json({ error: { code: 'VALIDATION_ERROR', message: msg } });
   }
+    const task = await prisma.task.findUnique({ where: { id: req.params.id } });
+    if (!task || task.userId !== req.user.id) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
   const { title, description, status, priority, dueDate } = parsed.data;
   try {
     const updated = await prisma.task.update({
@@ -79,6 +84,8 @@ async function update(req, res) {
 }
 
 async function remove(req, res) {
+  const task = await prisma.task.findUnique({ where: { id: req.params.id } });
+  if (!task || task.userId !== req.user.id) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
   try {
     await prisma.task.delete({ where: { id: req.params.id } });
     res.status(204).end();
@@ -93,6 +100,8 @@ async function replace(req, res) {
     const msg = parsed.error.issues[0]?.message || 'validation error';
     return res.status(422).json({ error: { code: 'VALIDATION_ERROR', message: msg } });
   }
+  const task = await prisma.task.findUnique({ where: { id: req.params.id } });
+  if (!task || task.userId !== req.user.id) return res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Task not found' } });
   const { title, description, status, priority, dueDate } = parsed.data;
   try {
     const updated = await prisma.task.update({
