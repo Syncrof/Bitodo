@@ -9,10 +9,13 @@ Bitodo, modern ve kullanıcı dostu bir yapılacaklar uygulamasıdır. Her kulla
 
 Aşağıda uygulamanın temel ekran görüntülerini bulabilirsiniz:
 
-![Ana Sayfa](./images/image-1.png)
-![Todo Listesi](./images/image-2.png)
-![Detaylar](./images/image-3.png)
+## ANA SAYFA
+![Ana Sayfa](./images/image.png)
+
+
+## LOGIN VE REGISTER
 ![Profil](./images/image-4.png)
+
 ![Mobil Görünüm](./images/image-5.png)
 
 ## Kurulum
@@ -81,5 +84,6 @@ frontend/
 1. Fork'la ve yeni bir branch oluştur.
 2. Değişikliklerini yap ve commit et.
 3. Pull request gönder.
+
 
 
