@@ -13,17 +13,21 @@ import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 // Layouts
 const AuthLayout = ({ children }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+  <div className="min-h-screen flex items-center justify-center bg-mesh">
     {children}
   </div>
 );
 
 const MainLayout = ({ children, onNewTask }) => (
-  <div className="min-h-screen bg-gray-50">
+  <div className="min-h-screen bg-mesh flex flex-col font-sans">
     <Topbar onNewTask={onNewTask} />
-    <div className="flex">
+    <div className="flex flex-1 overflow-hidden pt-16"> {/* Add padding top to account for fixed topbar */}
       <Sidebar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 overflow-y-auto p-4 md:p-8 animate-fade-in">
+        <div className="max-w-5xl mx-auto w-full">
+          {children}
+        </div>
+      </main>
     </div>
   </div>
 );
